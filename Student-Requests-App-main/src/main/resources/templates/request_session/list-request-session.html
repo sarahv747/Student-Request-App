@@ -1,0 +1,99 @@
+<!DOCTYPE html >
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="container mb-4" layout:fragment="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Семестар</th>
+                        <th scope="col">Време од</th>
+                        <th scope="col">Време до</th>
+                        <th scope="col">Опис</th>
+                        <th scope="col">Забелешка за прифаќање</th>
+                        <th scope="col">Тип на молба</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="requestSession : ${sessionPage.content}" class="product">
+                        <td th:text="${requestSession.semester.code}"></td>
+                        <td th:text="${requestSession.timeFrom}"></td>
+                        <td th:text="${requestSession.timeTo}"></td>
+                        <td th:text="${requestSession.description}"></td>
+                        <td th:text="${requestSession.approvalNote}"></td>
+                        <td th:text="${requestSession.requestType}"></td>
+                        <td class="text-right">
+                            <form th:action="@{'/{id}/delete' (id=${requestSession.id})}"
+                                  th:method="POST">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger delete-product">
+                                    <i class="fa fa-trash">Избриши</i>
+                                </button>
+                            </form>
+
+                            <a th:href="@{'/{id}/edit' (id=${requestSession.id})}"
+                               class="btn btn-sm btn-info edit-product">
+                                <i class="fa fa-trash">Промени</i>
+                            </a>
+
+                            <a th:href="@{/{type}/{id}(id=${requestSession.id},type=${requestSession.requestType})}"
+                               class="btn btn-primary">Покажи</a>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col mb-3">
+            <div class="row">
+                <div class="col-sm-12 col-md-12">
+                    <a th:href="@{'/add'}"
+                       class="btn btn-sm btn-link">
+                        <i class="fa fa-trash btn btn-dark">Додади</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:include="fragments/paging :: pageSection(${sessionPage})"></div>
+</div>
+
+
+<!--<nav aria-label="Page navigation">-->
+<!--    <ul class="pagination">-->
+<!--        <li class="page-item" th:class="${sessionPage.number == 0} ? 'disabled' : ''">-->
+<!--            <a class="page-link" th:href="@{/(page=1)}">First</a>-->
+<!--        </li>-->
+<!--        <li class="page-item" th:class="${sessionPage.number == 0} ? 'disabled' : ''">-->
+<!--            <a class="page-link" th:href="@{/(page=${sessionPage.number})}"-->
+<!--               th:if="${sessionPage.number > 0}">Previous</a>-->
+<!--        </li>-->
+<!--        <li th:each="page : ${#numbers.sequence(1, sessionPage.totalPages)}"-->
+<!--            th:class="${sessionPage.number == page - 1} ? 'page-item active' : 'page-item'">-->
+<!--            <a class="page-link" th:href="@{/(page=${page})}" th:text="${page}"></a>-->
+<!--        </li>-->
+<!--        <li class="page-item" th:class="${sessionPage.number == sessionPage.totalPages - 1} ? 'disabled' : ''">-->
+<!--            <a class="page-link" th:href="@{/(page=${sessionPage.number + 2})}">Next</a>-->
+<!--        </li>-->
+<!--        <li class="page-item" th:class="${sessionPage.number == sessionPage.totalPages - 1} ? 'disabled' : ''">-->
+<!--            <a class="page-link" th:href="@{/(page=${sessionPage.totalPages })}">Last</a>-->
+<!--        </li>-->
+<!--    </ul>-->
+<!--</nav>-->
+
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="mk" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Поднеси нова молба за задоцнето запишување на курсот:</title>
+</head>
+<body>
+<div class="mt-4" layout:fragment="content">
+    <h2 class="my-5">Поднеси нова молба за задоцнето запишување на курсот:</h2>
+    <div class="row justify-content-center bg-light">
+        <div th:if="${hasError}">
+            <h5 class="text-center text-danger" th:text="${error}"></h5>
+        </div>
+        <div class="col-md-6">
+            <form th:method="POST" th:action="@{'/LATE_COURSE_ENROLLMENT/apply'}">
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Студент:
+                            <input name="student" th:value="${request?.student?.index}"
+                                   placeholder="Внесете индекс" class="form-control">
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-label">Курс:
+                            <select class="form-select" name="course">
+                                <option value="" selected>Одбери курс...</option>
+                                <option th:selected="${course.id == request?.course?.id}"
+                                        th:each="course : ${courses}"
+                                        th:value="${course.id}"
+                                        th:text="${course.subject.name}"></option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label">Професор:
+                            <select class="form-select" name="professor">
+                                <option value="" selected>Одбери професор...</option>
+                                <option th:selected="${professor.id == request?.professor?.id}"
+                                        th:each="professor : ${professors}" th:value="${professor.id}"
+                                        th:text="${professor.name}"></option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Опис:</label>
+                    <textarea th:text="${request?.description}" id="description"
+                              placeholder="Напиши краток опис (максимум 250 карактери)..."
+                              maxlength="250"
+                              class="form-control" name="description"
+                              rows="5"></textarea>
+                </div>
+
+                <input type="hidden" name="id" th:value="${request?.id}">
+                <input type="hidden" name="requestSession" th:value="${sessionId}">
+
+                <div class="row">
+                    <div class="col">
+                        <a href="javascript:history.back()" class="btn btn-danger">Откажи</a>
+                    </div>
+                    <div class="col text-end">
+                        <button type="submit" class="btn btn-primary">Поднеси</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container" layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form action="/save" method="POST" class="mt-4">
+                <input id="id" type="hidden" name="id" th:value="${requestSession?.getId()}">
+                <div class="form-group">
+                    <label for="timeFrom">Време од</label>
+                    <input type="datetime-local"
+                           class="form-control"
+                           id="timeFrom"
+                           name="timeFrom"
+                           th:value="${requestSession?.getTimeFrom()}">
+
+                </div>
+                <div class="form-group">
+                    <label for="timeTo">Време до</label>
+                    <input type="datetime-local"
+                           class="form-control"
+                           id="timeTo"
+                           name="timeTo"
+                           th:value="${requestSession?.getTimeTo()}">
+
+                </div>
+                <div class="form-group">
+                    <label for="description">Опис</label>
+                    <input type="text"
+                           class="form-control"
+                           id="description"
+                           name="description"
+                           th:value="${requestSession?.getDescription()}">
+                </div>
+
+                <div class="form-group">
+                    <label for="approvalNote">Забелешка за одобрување</label>
+                    <input type="text"
+                           class="form-control"
+                           id="approvalNote"
+                           name="approvalNote"
+                           th:value="${requestSession?.getApprovalNote()}">
+                </div>
+
+                <div class="form-group">
+                    <label for="semester">Семестар</label>
+                    <select id="semester" name="semester" class="form-control">
+                        <option th:if="${requestSession} != null"
+                                th:selected="${requestSession.getSemester() != null &&
+                                requestSession.getSemester().getCode() == sem.getCode()}"
+                                th:each="sem : ${semesters}"
+                                th:value="${sem.getCode()}"
+                                th:text="${sem.getCode()}">
+                        </option>
+                        <option th:if="${requestSession} == null"
+                                th:each="sem : ${semesters}"
+                                th:value="${sem.getCode()}"
+                                th:text="${sem.getCode()}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requestType">Тим на молба</label>
+                    <select id="requestType" name="requestType" class="form-control">
+                        <option th:if="${requestSession} != null"
+                                th:selected="${requestSession.getRequestType() != null &&
+                                    requestSession.getRequestType().name() == type.name()}"
+                                th:each="type : ${requestTypes}"
+                                th:value="${type.name()}"
+                                th:text="${type.name()}">
+                        </option>
+                        <option th:if="${requestSession} == null"
+                                th:each="type : ${requestTypes}"
+                                th:value="${type}"
+                                th:text="${type}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group mt-4">
+                    <button id="submit" type="submit" class="btn btn-primary">Зачувај</button>
+                    <a type="button" class="btn btn-primary" href="/">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

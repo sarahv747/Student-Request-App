@@ -1,0 +1,32 @@
+version: "3"
+services:
+  finki-db:
+    image: "postgres"
+    restart: always
+    container_name: "finki_services_db"
+    environment:
+      - POSTGRES_USER=finki_admin
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-f1nk1_@dm1n}
+      - POSTGRES_DB=finki-services-db
+    ports:
+      - "54322:5432"
+    volumes:
+      - init:/var/lib/postgresql/data
+    networks:
+      - finki_services_net
+  common-model:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finki_common_model
+    environment:
+      - spring.datasource.url=jdbc:postgresql://finki_services_db:5432/finki-services-db
+      - spring.datasource.password=${DB_PASSWORD:-f1nk1_@dm1n}
+      - spring.jpa.show-sql=false
+    networks:
+      - finki_services_net
+volumes:
+  init:
+networks:
+  finki_services_net:
+    driver: bridge

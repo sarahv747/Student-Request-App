@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Error page</title>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <h1 th:class="text-danger">Error <span class="text-danger" th:text="${exceptionMessage}"></span></h1>
+    </div>
+    <div class="mt-4"><a class="btn btn-secondary" onclick="goBack()">Назад</a></div>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</div>
+</body>
+</html>

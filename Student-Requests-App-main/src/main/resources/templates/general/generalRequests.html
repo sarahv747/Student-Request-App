@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>RequestsFINKI</title>
+    <link href="/bootstrap.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ИД</th>
+            <th>Тип</th>
+            <th>Поднесена на</th>
+            <th>Опис</th>
+            <th>Студент</th>
+            <th>Процесирана</th>
+            <th>Статус</th>
+            <th>Сетирај статус</th>
+            <th>Избриши</th>
+        </tr>
+        </thead>
+        <form class="mb-4" th:action="@{'/GENERAL/' + ${requestSessionId}}" method="get">
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="studentInput" name="student" placeholder="Student Index" th:value="${param.student}"/>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="isApprovedSelect" name="isApproved">
+                        <option value="">All</option>
+                        <option value="true" th:selected="${param.isApproved != null && !#strings.isEmpty(param.isApproved) && param.isApproved}">Approved</option>
+                        <option value="false" th:selected="${param.isApproved != null && !#strings.isEmpty(param.isApproved) && !param.isApproved}">Denied</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="isProcessedSelect" name="isProcessed">
+                        <option value="">All</option>
+                        <option value="true" th:selected="${param.isProcessed != null && !#strings.isEmpty(param.isProcessed) && param.isProcessed}">Processed</option>
+                        <option value="false" th:selected="${param.isProcessed != null && !#strings.isEmpty(param.isProcessed) && !param.isProcessed}">Not Processed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <button type="button" onclick="clearForm()" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+        </form>
+        <tbody>
+        <tr th:each="generalRequests : ${generalRequests}">
+            <td th:text="${generalRequests.id}"></td>
+            <td>Генерална молба</td>
+            <td th:text="${generalRequests?.dateCreated}"></td>
+            <td class="col-md-6" th:text="${generalRequests?.description}"></td>
+            <td th:text="${generalRequests?.student.index}"></td>
+            <td>
+                <span class="text-success" th:if="${generalRequests?.isProcessed}">✔️</span>
+                <span class="text-danger" th:if="${!generalRequests?.isProcessed}">❌</span>
+            </td>
+            <td>
+                <span class="text-warning" th:if="${generalRequests?.isApproved == null}">Во процесирање</span>
+                <span class="text-success" th:if="${generalRequests?.isApproved != null and generalRequests?.isApproved}">Одобрено</span>
+                <span class="text-danger" th:if="${generalRequests?.isApproved != null and !generalRequests?.isApproved}">Одбиено</span>
+            </td>
+            <td>
+                <div class="btn-group" role="group">
+                    <form th:method="POST" th:action="@{'/GENERAL/' + ${requestSessionId} + '/edit/{id}'(id=${generalRequests.id})}">
+                        <input type="hidden" name="action" value="approve">
+                        <button class="btn btn-success" th:disabled="${generalRequests?.isApproved == true}">Одобри</button>
+                    </form>
+                    <form th:method="POST" th:action="@{'/GENERAL/' + ${requestSessionId} + '/edit/{id}'(id=${generalRequests.id})}">
+                        <input type="hidden" name="action" value="deny">
+                        <button type="button" class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#denyModal" th:disabled="${generalRequests?.isApproved == false}">
+                            Одбиј
+                        </button>
+                    </form>
+                    <form th:method="POST" th:action="@{'/GENERAL/' + ${requestSessionId} + '/edit/{id}'(id=${generalRequests.id})}">
+                        <input type="hidden" name="action" value="markProcessed">
+                        <button th:classappend="${generalRequests?.isApproved == true || generalRequests?.isApproved == false} ? 'btn btn-info mx-1' : 'btn btn-info mx-1 disabled'"
+                                th:disabled="${generalRequests?.isApproved == null}">
+                            Процесирај
+                        </button>
+                    </form>
+                </div>
+            </td>
+            <td>
+                <form th:method="POST" th:action="@{'/GENERAL/' + ${requestSessionId} + '/delete/{id}'(id=${generalRequests.id})}">
+                    <button type="submit" class="btn btn-danger">X</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:insert="~{fragments/paging :: pageSection(${generalRequests})}"></div>
+
+    <div class="modal" id="denyModal" tabindex="-1" aria-labelledby="denyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="denyModalLabel">Одбиј Молба</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="denyForm" th:method="POST">
+                        <div class="mb-3">
+                            <label for="denyReason" class="form-label">Причина:</label>
+                            <textarea class="form-control" id="denyReason" name="reason" rows="5" th:text="${denyReason}"></textarea>
+                            <input type="hidden" name="action" value="deny">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Откажи</button>
+                    <button type="submit" form="denyForm" class="btn btn-danger">Одбиј</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let denyButtons = document.querySelectorAll('[data-bs-target="#denyModal"]');
+
+            denyButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    let formAction = button.closest('form').getAttribute('action');
+                    document.querySelector('#denyForm').setAttribute('action', formAction);
+                });
+            });
+        });
+
+        function clearForm() {
+            document.getElementById('studentInput').value = '';
+            document.getElementById('isApprovedSelect').selectedIndex = 0;
+            document.getElementById('isProcessedSelect').selectedIndex = 0;
+        }
+    </script>
+</div>
+</body>
+</html>

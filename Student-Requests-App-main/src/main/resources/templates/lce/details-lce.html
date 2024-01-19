@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="mk" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали за молбата</title>
+</head>
+<body>
+<div class="mt-4" layout:fragment="content">
+    <h2 class="my-5">Детали за молбата:</h2>
+    <div class="row justify-content-center bg-light">
+        <div th:if="${hasError}">
+            <h5 class="text-center text-danger" th:text="${error}"></h5>
+        </div>
+        <div class="col-md-6">
+
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">ИД:
+                        <input th:value="${request?.id}"
+                               class="form-control" disabled>
+                    </label>
+                </div>
+                <div class="col">
+                    <label class="form-label">Студент:
+                        <input th:value="${request?.student?.index}"
+                               class="form-control" disabled>
+                    </label>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Курс:
+                        <input th:value="${request?.course?.subject?.name}"
+                               class="form-control" disabled>
+                    </label>
+                </div>
+
+                <div class="col">
+                    <label class="form-label">Професор:
+                        <input th:value="${request?.professor?.name}"
+                               class="form-control" disabled>
+                    </label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Опис:</label>
+                <textarea th:text="${request?.description}" id="description"
+                          class="form-control"
+                          rows="5"
+                          disabled></textarea>
+            </div>
+
+            <form th:method="POST" th:action="@{'/LATE_COURSE_ENROLLMENT/updateStatus/{id}' (id=${request.id})}">
+                <div class="mb-3">
+                    <label for="rejectionReason" class="form-label">Причина за одбивање:</label>
+                    <textarea th:text="${reject} ? ${rejectionReason} : ${request.rejectionReason}"
+                              id="rejectionReason"
+                              name="rejectionReason"
+                              placeholder="Објасни причина за одбивање на молбата (максимум 3000 карактери)..."
+                              maxlength="3000"
+                              rows="5"
+                              th:disabled="${!reject}"
+                              class="form-control"></textarea>
+                </div>
+
+
+                <input value="false" name="action" type="hidden">
+
+
+                <div class="row">
+                    <div class="col">
+                        <a href="javascript:history.back()" th:text="${reject ? 'Откажи' : 'Назад'}"
+                           class="btn btn-danger">Откажи</a>
+                    </div>
+                    <div th:if="${reject}" class="col text-end">
+                        <button type="submit" class="btn btn-primary">Одбиј молба</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
